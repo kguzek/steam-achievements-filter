@@ -1,4 +1,4 @@
-const log = (...args) => void console.log("[STAFI] [UI]", ...args);
+const log = (...args) => void console.log("[STAFI] [LOG] [UI]", ...args);
 
 const fsEts2 = document.getElementById("fs-ets2");
 const form = document.querySelector("form");
@@ -23,6 +23,8 @@ const ETS2_EXPANSIONS = [
   "Nordic Horizons",
 ];
 
+const ETS2_DLC = [...ETS2_CARGO, ...ETS2_EXPANSIONS];
+
 const NUMBER_OF_DLCS = ETS2_CARGO.length + ETS2_EXPANSIONS.length;
 
 const btnApply = document.querySelector("button");
@@ -30,6 +32,11 @@ let lastSelectedFilters = [];
 
 const getCurrentTab = () =>
   browser.tabs.query({ currentWindow: true, active: true });
+
+// Doesn't account for duplicates (not needed in this case)
+const areArraysEqual = (a, b) =>
+  a.every((value) => b.includes(value)) &&
+  b.every((value) => a.includes(value));
 
 async function applyFilters(ets2Filters) {
   const tabInfo = await getCurrentTab();
@@ -40,7 +47,6 @@ async function applyFilters(ets2Filters) {
     filters,
   });
   browser.storage.local.set({ filters });
-  onFormChange();
 }
 
 function createCheckbox(dlcName, filters) {
@@ -61,6 +67,7 @@ async function init() {
   fsEts2.appendChild(document.createElement("hr"));
   ETS2_EXPANSIONS.forEach((dlcName) => createCheckbox(dlcName, filters));
 
+  lastSelectedFilters = invertFilters(filters.ets2);
   onFormChange();
 }
 
@@ -70,7 +77,7 @@ const getSelectedFilters = () =>
 function onFormChange() {
   const selectedFilters = getSelectedFilters();
   cbDlcAll.checked = selectedFilters.length == NUMBER_OF_DLCS;
-  const updated = selectedFilters != lastSelectedFilters;
+  const updated = !areArraysEqual(selectedFilters, lastSelectedFilters);
   if (updated) {
     btnApply.classList.add("updated");
     btnApply.disabled = false;
@@ -80,17 +87,18 @@ function onFormChange() {
   }
 }
 
+const invertFilters = (filters) =>
+  ETS2_DLC.filter((dlcName) => !filters.includes(dlcName));
+
 form.onsubmit = () => {
   const selectedFilters = getSelectedFilters();
   lastSelectedFilters = selectedFilters;
-  const invertedFilters = ETS2_EXPANSIONS.concat(ETS2_CARGO).filter(
-    (dlcName) => !selectedFilters.includes(dlcName)
-  );
-  applyFilters(invertedFilters);
+  applyFilters(invertFilters(selectedFilters));
+  onFormChange();
   return false;
 };
 
-form.onchange = onFormChange;
+form.onchange = () => onFormChange();
 
 cbDlcAll.onchange = () => {
   document

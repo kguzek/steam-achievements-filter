@@ -1,5 +1,7 @@
-const log = (...args) => void console.log("[STAFI]", ...args);
-const debug = (...args) => void console.debug("[STAFI]", ...args);
+const log = (...args) => void console.log("[STAFI] [LOG]", ...args);
+const debug = (...args) => void console.debug("[STAFI] [DEBUG]", ...args);
+const info = (...args) => void console.info("[STAFI] [INFO]", ...args);
+const warn = (...args) => void console.warn("[STAFI] [WARN]", ...args);
 
 const txtSummary = document.querySelector("#topSummaryAchievements>div");
 const sliderSummary = document.querySelector(".achieveBarProgress");
@@ -63,8 +65,10 @@ function processFilters(data) {
         Math.round(
           Math.min(metadata.unlockedAchievements / numAchievements, 1) * 100
         ) + "%";
-      txtSummary.textContent = `${metadata.unlockedAchievements} of ${numAchievements} (${achievementPercentage}) achievements earned:`;
-      sliderSummary.style.width = achievementPercentage;
+      if (metadata.page === "personal") {
+        txtSummary.textContent = `${metadata.unlockedAchievements} of ${numAchievements} (${achievementPercentage}) achievements earned:`;
+        sliderSummary.style.width = achievementPercentage;
+      }
       break;
     default:
       break;
@@ -72,18 +76,23 @@ function processFilters(data) {
 }
 
 async function main() {
-  log("---");
-  log("Extension activated!");
+  // info("---");
+  // info("Extension activated!");
 
   if (location.hostname !== "steamcommunity.com") {
-    log("Not on Steam Community website. Aborting.");
+    warn("Not on Steam Community website. Aborting.");
   }
 
   const { filters } = await browser.storage.local.get("filters");
 
+  const numHiddenAchievements =
+    document.querySelectorAll(".stafi-hidden").length;
   const match = txtSummary.textContent.match(/(\d+) of (\d+) (.+)/);
-  metadata.unlockedAchievements = match[1];
-  metadata.totalAchievements = match[2];
+  if (match) {
+    metadata.page = "personal";
+    metadata.unlockedAchievements = +match[1];
+    metadata.totalAchievements = +match[2] + numHiddenAchievements;
+  }
 
   processFilters({ trigger: "loadFilters", filters });
 }

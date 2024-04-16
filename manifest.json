@@ -3,7 +3,7 @@
   "name": "Steam Achievements Filter",
   "version": "1.0",
 
-  "description": "Filters the achievements listed on the Steam Community website profile using custom criteria.",
+  "description": "This extension allows the user to filter the achievements listed on the Steam Community Statistics page by required DLC and other criteria. Currently, the supported filters are the Euro Truck Simulator 2 DLC-only achievements.",
 
   "icons": {
     "48": "icons/logo-48.png",

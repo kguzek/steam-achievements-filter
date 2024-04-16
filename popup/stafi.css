@@ -39,9 +39,12 @@ button {
   width: 50%;
 }
 
-button:hover,
+button:hover {
+  opacity: 80%;
+}
+
 button[disabled] {
-  opacity: 85%;
+  opacity: 50%;
 }
 
 button:disabled {
