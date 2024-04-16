@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Steam Achievements Filter",
+  "version": "1.0",
+
+  "description": "Filters the achievements listed on the Steam Community website profile using custom criteria.",
+
+  "icons": {
+    "48": "icons/logo-48.png",
+    "96": "icons/logo-96.png"
+  },
+
+  "permissions": ["storage"],
+  "host_permissions": ["https://steamcommunity.com/*"],
+
+  "action": {
+    "default_icon": {
+      "48": "icons/logo-48.png",
+      "96": "icons/logo-96.png"
+    },
+    "default_title": "Steam Achievements Filter",
+    "default_popup": "popup/stafi.html"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://steamcommunity.com/*"],
+      "js": ["index.js"]
+    }
+  ]
+}
+
