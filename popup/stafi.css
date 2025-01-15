@@ -27,6 +27,15 @@ fieldset {
   flex-direction: column;
 }
 
+legend a {
+  color: unset;
+  transition: color 200ms ease;
+}
+
+legend a:hover {
+  color: #eee;
+}
+
 button {
   background-color: #ccc;
   font-family: unset;
@@ -55,4 +64,3 @@ button.updated::after {
   content: " *";
   color: #f00;
 }
-

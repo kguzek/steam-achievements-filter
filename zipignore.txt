@@ -1,0 +1,6 @@
+.git/
+steam-achievements-filter.zip
+.gitignore
+zip.sh
+zipignore.txt
+files-to-include.txt
