@@ -101,4 +101,3 @@ async function main() {
 main();
 
 browser.runtime.onMessage.addListener(processFilters);
-
