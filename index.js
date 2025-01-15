@@ -81,6 +81,7 @@ async function main() {
 
   if (location.hostname !== "steamcommunity.com") {
     warn("Not on Steam Community website. Aborting.");
+    return;
   }
 
   const { filters } = await browser.storage.local.get("filters");

@@ -1,8 +1,10 @@
 const log = (...args) => void console.log("[STAFI] [LOG] [UI]", ...args);
+const error = (...args) => void console.error("[STAFI] [ERROR] [UI]", ...args);
 
-const fsEts2 = document.getElementById("fs-ets2");
 const form = document.querySelector("form");
+const fsEts2 = document.getElementById("fs-ets2");
 const cbDlcAll = document.getElementById("cb-dlc-all");
+const btnApply = document.querySelector("button");
 
 const ETS2_CARGO = [
   "High Power Cargo Pack",
@@ -25,9 +27,6 @@ const ETS2_EXPANSIONS = [
 
 const ETS2_DLC = [...ETS2_CARGO, ...ETS2_EXPANSIONS];
 
-const NUMBER_OF_DLCS = ETS2_CARGO.length + ETS2_EXPANSIONS.length;
-
-const btnApply = document.querySelector("button");
 let lastSelectedFilters = [];
 
 const getCurrentTab = () =>
@@ -53,19 +52,25 @@ function createCheckbox(dlcName, filters) {
   const checkbox = document.createElement("input");
   checkbox.name = dlcName;
   checkbox.type = "checkbox";
-  checkbox.checked = !filters?.ets2?.includes(dlcName);
+  checkbox.checked = !filters?.includes(dlcName);
   const label = document.createElement("label");
-  label.textContent = dlcName;
+  label.textContent = dlcName + " DLC";
   label.appendChild(checkbox);
   fsEts2.appendChild(label);
 }
 
 async function init() {
-  const { filters } = await browser.storage.local.get("filters");
+  let filters = {};
+  try {
+    ({ filters } = await browser.storage.local.get("filters"));
+  } catch {
+    error("Could not fetch filters from storage");
+  }
 
-  ETS2_CARGO.forEach((dlcName) => createCheckbox(dlcName, filters));
+  const ets2Filters = filters?.ets2 ?? [];
+  ETS2_CARGO.forEach((dlcName) => createCheckbox(dlcName, ets2Filters));
   fsEts2.appendChild(document.createElement("hr"));
-  ETS2_EXPANSIONS.forEach((dlcName) => createCheckbox(dlcName, filters));
+  ETS2_EXPANSIONS.forEach((dlcName) => createCheckbox(dlcName, ets2Filters));
 
   lastSelectedFilters = invertFilters(filters.ets2);
   onFormChange();
@@ -76,7 +81,7 @@ const getSelectedFilters = () =>
 
 function onFormChange() {
   const selectedFilters = getSelectedFilters();
-  cbDlcAll.checked = selectedFilters.length == NUMBER_OF_DLCS;
+  cbDlcAll.checked = selectedFilters.length == ETS2_DLC.length;
   const updated = !areArraysEqual(selectedFilters, lastSelectedFilters);
   if (updated) {
     btnApply.classList.add("updated");
@@ -93,8 +98,8 @@ const invertFilters = (filters) =>
 form.onsubmit = () => {
   const selectedFilters = getSelectedFilters();
   lastSelectedFilters = selectedFilters;
-  applyFilters(invertFilters(selectedFilters));
   onFormChange();
+  applyFilters(invertFilters(selectedFilters));
   return false;
 };
 
