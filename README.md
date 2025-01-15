@@ -10,7 +10,7 @@ To do this, simply select the extension icon, select the DLC, and click `apply`.
 
 ## Copyright
 
-Copyright © 2025-Present by Konrad Guzek
+Copyright © 2024-2025 by Konrad Guzek
 
 This file is part of Steam Achievements Filter.
 
